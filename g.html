@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ayushman Borgohain — Minimal Portfolio</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans, Inter, and JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            paper: '#FAFAFA',
+            ink: '#111111',
+            muted: '#666664',
+            hairline: '#E6E4DF',
+            darkPaper: '#0D0D0D',
+            darkCard: '#141416',
+            darkHairline: '#242428',
+            terracotta: '#C86D51',
+            sage: '#5B7A67',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* User Portrait Circular Icon Styling — ensures exact image displays cleanly */
+    .user-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 18%;
+      border-radius: 9999px;
+      display: block;
+    }
+
+    /* Subtle editorial grain overlay */
+    .paper-grain {
+      background-image: radial-gradient(rgba(17, 17, 17, 0.045) 1px, transparent 0);
+      background-size: 22px 22px;
+    }
+    .dark .paper-grain {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
+      background-size: 22px 22px;
+    }
+
+    /* Staggered entrance reveal animation */
+    @keyframes fadeUpReveal {
+      0% {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .reveal-item {
+      opacity: 0;
+      animation: fadeUpReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+
+    /* Smooth kinetic marquee */
+    @keyframes marqueeScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+      display: flex;
+      width: max-content;
+      animation: marqueeScroll 28s linear infinite;
+    }
+    .animate-marquee:hover {
+      animation-play-state: paused;
+    }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(120, 120, 120, 0.25);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+
+<body class="bg-paper text-ink dark:bg-darkPaper dark:text-neutral-100 font-sans antialiased transition-colors duration-300 selection:bg-ink selection:text-paper dark:selection:bg-white dark:selection:text-ink relative overflow-x-hidden">
+
+  <!-- Ambient Paper Dot Matrix, Cursor Spotlight & Ink-Line Serpent Trail Canvas -->
+  <div class="fixed inset-0 paper-grain pointer-events-none z-0"></div>
+  <div id="cursorSpotlight" class="fixed inset-0 pointer-events-none z-0 transition-opacity duration-300"></div>
+  <canvas id="serpentTrailCanvas" class="fixed inset-0 pointer-events-none z-10"></canvas>
+
+  <!-- Floating Glass Pill Navigation -->
+  <header class="sticky top-4 z-40 px-4 sm:px-6 reveal-item">
+    <div class="max-w-4xl mx-auto px-3.5 sm:px-5 py-2 rounded-full bg-white/80 dark:bg-darkCard/80 backdrop-blur-md border border-hairline dark:border-darkHairline shadow-2xs flex items-center justify-between">
+      
+      <!-- Brand + Tiny Circular Portrait Icon (30px) with Click-to-Upload Swap -->
+      <div class="flex items-center gap-2.5">
+        <label for="avatarUploadInput" title="Click to upload a custom portrait icon" class="relative w-[30px] h-[30px] rounded-full overflow-hidden border border-neutral-300 dark:border-neutral-700 bg-neutral-200 dark:bg-neutral-800 shrink-0 cursor-pointer group ring-2 ring-transparent hover:ring-terracotta/40 transition-all">
+          <img 
+            src="Gemini_Generated_Image_1dzabj1dzabj1dza.png" 
+            alt="Ayushman Borgohain" 
+            class="user-avatar-img user-portrait-sync transition-transform duration-300 group-hover:scale-110"
+            onerror="handleAvatarFallback(this)"
+          />
+        </label>
+        <input id="avatarUploadInput" type="file" accept="image/*" class="hidden" />
+        <a href="#" class="font-display font-semibold tracking-tight text-sm flex items-center gap-1.5">
+          <span>Ayushman</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-terracotta inline-block"></span>
+        </a>
+      </div>
+
+      <!-- Minimal Links + Live IST Clock + Theme Switcher -->
+      <nav class="flex items-center gap-4 sm:gap-6 text-xs text-muted dark:text-neutral-400">
+        <a href="#work" class="hover:text-ink dark:hover:text-white transition-colors">Work</a>
+        <a href="#stack" class="hover:text-ink dark:hover:text-white transition-colors">Stack</a>
+        <a href="#contact" class="hover:text-ink dark:hover:text-white transition-colors">Contact</a>
+
+        <span id="istClock" class="hidden md:inline-block font-mono text-[11px] text-neutral-400 dark:text-neutral-500 border-l border-hairline dark:border-darkHairline pl-4">
+          --:-- IST
+        </span>
+
+        <!-- Dark / Light Theme Toggle -->
+        <button 
+          id="themeToggle" 
+          type="button" 
+          aria-label="Toggle color theme"
+          class="w-7 h-7 rounded-full border border-hairline dark:border-darkHairline flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 text-ink dark:text-neutral-200 transition-colors cursor-pointer"
+        >
+          <svg class="w-3.5 h-3.5 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <svg class="w-3.5 h-3.5 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Editorial Container -->
+  <main class="relative z-20 max-w-5xl mx-auto px-5 sm:px-8">
+
+    <!-- Hero Section with Editorial Art-Style Coiled Serpent Centerpiece -->
+    <section class="relative pt-14 pb-16 sm:pt-20 sm:pb-24 border-b border-hairline dark:border-darkHairline">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+        
+        <!-- Left: Low-Key Editorial Typography -->
+        <div class="lg:col-span-7 flex flex-col items-start gap-5">
+          
+          <!-- Tiny Circular Portrait Badge (24px) + Status -->
+          <div class="reveal-item delay-100 inline-flex items-center gap-2.5 pl-1.5 pr-3.5 py-1 rounded-full border border-hairline dark:border-darkHairline bg-white/90 dark:bg-darkCard/90 shadow-2xs">
+            <div class="w-[24px] h-[24px] rounded-full overflow-hidden border border-neutral-300 dark:border-neutral-700 shrink-0">
+              <img 
+                src="Gemini_Generated_Image_1dzabj1dzabj1dza.png" 
+                alt="Ayushman" 
+                class="user-avatar-img user-portrait-sync"
+                onerror="handleAvatarFallback(this)"
+              />
+            </div>
+            <span class="font-mono text-[11px] text-muted dark:text-neutral-400">
+              Available · Nazira, Assam
+            </span>
+            <span class="w-1.5 h-1.5 rounded-full bg-sage animate-pulse"></span>
+          </div>
+
+          <!-- Display Headline -->
+          <h1 class="reveal-item delay-200 font-display text-3xl sm:text-5xl font-semibold tracking-tight leading-[1.12]">
+            Ayushman Borgohain
+            <span class="block text-neutral-500 dark:text-neutral-400 font-medium text-2xl sm:text-4xl mt-2 leading-[1.2]">
+              Building quiet software, local AI &amp; hardened web systems.
+            </span>
+          </h1>
+
+          <!-- Minimal Action Pills -->
+          <div class="reveal-item delay-300 flex flex-wrap items-center gap-3 pt-2">
+            <a 
+              href="#work" 
+              class="px-5 py-2.5 rounded-full bg-ink text-paper dark:bg-white dark:text-ink text-xs sm:text-sm font-medium hover:opacity-85 transition-all inline-flex items-center gap-2"
+            >
+              <span>Selected Work</span>
+              <span class="font-mono text-xs">↓</span>
+            </a>
+            <a 
+              href="#contact" 
+              class="px-4 py-2.5 rounded-full border border-hairline dark:border-darkHairline bg-white/80 dark:bg-darkCard/80 text-xs sm:text-sm font-mono text-muted dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors inline-flex items-center gap-1.5"
+            >
+              <span>Get in Touch</span>
+              <span>↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Interactive Art-Style Line & Stipple Serpent Artwork -->
+        <div class="lg:col-span-5 flex justify-center lg:justify-end reveal-item delay-400">
+          <div id="artSerpentWrapper" class="relative w-full max-w-[340px] aspect-square rounded-3xl border border-hairline dark:border-darkHairline bg-white/65 dark:bg-darkCard/65 backdrop-blur-xs p-5 flex items-center justify-center overflow-hidden group cursor-pointer" title="Move cursor across the artwork">
+            
+            <!-- Subtle Editorial Corner Coordinates -->
+            <span class="absolute top-3.5 left-4 font-mono text-[10px] tracking-widest uppercase text-neutral-400 dark:text-neutral-500">
+              FIG. 01 — OPHIDIA
+            </span>
+            <span class="absolute bottom-3.5 right-4 font-mono text-[10px] text-neutral-400 dark:text-neutral-500">
+              26.91°N · 94.73°E
+            </span>
+
+            <!-- Interactive Art-Style Botanical & Geometric Coiled Serpent SVG -->
+            <svg id="editorialSnakeSvg" viewBox="0 0 320 320" class="w-full h-full overflow-visible select-none">
+              <defs>
+                <!-- Stipple / Fine Crosshatch Pattern for Artistic Shading -->
+                <pattern id="stipplePattern" width="6" height="6" patternUnits="userSpaceOnUse">
+                  <circle cx="1.5" cy="1.5" r="0.7" fill="currentColor" opacity="0.28" />
+                  <circle cx="4.5" cy="4.5" r="0.55" fill="currentColor" opacity="0.2" />
+                </pattern>
+                <!-- Subtle Warm Terracotta & Sage Accent Gradient -->
+                <linearGradient id="serpentAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#C86D51" stop-opacity="0.85" />
+                  <stop offset="50%" stop-color="#5B7A67" stop-opacity="0.75" />
+                  <stop offset="100%" stop-color="#C86D51" stop-opacity="0.85" />
+                </linearGradient>
+              </defs>
+
+              <!-- Delicate Architectural Orbit Rings -->
+              <circle cx="160" cy="160" r="118" fill="none" stroke="currentColor" stroke-opacity="0.1" stroke-width="1" stroke-dasharray="3 5" />
+              <circle cx="160" cy="160" r="84" fill="none" stroke="currentColor" stroke-opacity="0.08" stroke-width="1" />
+
+              <!-- Minimalist Botanical Leaves & Celestial Four-Point Stars -->
+              <g class="text-sage dark:text-emerald-400/70" stroke="currentColor" fill="none" stroke-width="1.2">
+                <!-- Left Botanical Sprig -->
+                <path d="M58 195 Q44 172 56 146" />
+                <path d="M52 178 Q38 174 36 164 Q47 165 52 178 Z" fill="currentColor" fill-opacity="0.12" />
+                <path d="M53 162 Q65 154 68 144 Q57 148 53 162 Z" fill="currentColor" fill-opacity="0.12" />
+                <!-- Right Botanical Sprig -->
+                <path d="M262 128 Q274 150 264 176" />
+                <path d="M266 144 Q279 148 281 158 Q270 156 266 144 Z" fill="currentColor" fill-opacity="0.12" />
+                <path d="M265 162 Q253 169 251 179 Q261 174 265 162 Z" fill="currentColor" fill-opacity="0.12" />
+              </g>
+
+              <!-- Four-Point Editorial Stars -->
+              <g fill="#C86D51" opacity="0.85">
+                <path d="M84 74 L86 80 L92 82 L86 84 L84 90 L82 84 L76 82 L82 80 Z" />
+                <path d="M242 226 L243.5 230.5 L248 232 L243.5 233.5 L242 238 L240.5 233.5 L236 232 L240.5 230.5 Z" />
+                <circle cx="232" cy="78" r="2" />
+                <circle cx="88" cy="242" r="2" />
+              </g>
+
+              <!-- Dynamic Coiled Serpent Group (Animated via JS for smooth organic breathing + cursor parallax) -->
+              <g id="snakeBodyGroup">
+                <!-- Outer Stipple Shadow Ribbon -->
+                <path id="snakeShadowPath"
+                  d="M 86 226 C 58 194, 72 138, 124 134 C 176 130, 224 166, 206 208 C 188 248, 114 236, 108 184 C 102 132, 162 94, 212 108 C 248 118, 254 156, 226 168"
+                  fill="none"
+                  stroke="url(#stipplePattern)"
+                  stroke-width="24"
+                  stroke-linecap="round"
+                />
+
+                <!-- Main Outer Contour Line -->
+                <path id="snakeOuterPath"
+                  d="M 86 226 C 58 194, 72 138, 124 134 C 176 130, 224 166, 206 208 C 188 248, 114 236, 108 184 C 102 132, 162 94, 212 108 C 248 118, 254 156, 226 168"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="16"
+                  stroke-linecap="round"
+                />
+
+                <!-- Inner Paper Core (creates crisp dual-line engraving look) -->
+                <path id="snakeInnerCore"
+                  d="M 86 226 C 58 194, 72 138, 124 134 C 176 130, 224 166, 206 208 C 188 248, 114 236, 108 184 C 102 132, 162 94, 212 108 C 248 118, 254 156, 226 168"
+                  fill="none"
+                  class="stroke-paper dark:stroke-darkCard transition-colors duration-300"
+                  stroke-width="12.5"
+                  stroke-linecap="round"
+                />
+
+                <!-- Artistic Geometric Scale Markings along Spine -->
+                <path id="snakeSpinePath"
+                  d="M 86 226 C 58 194, 72 138, 124 134 C 176 130, 224 166, 206 208 C 188 248, 114 236, 108 184 C 102 132, 162 94, 212 108 C 248 118, 254 156, 226 168"
+                  fill="none"
+                  stroke="url(#serpentAccent)"
+                  stroke-width="2"
+                  stroke-dasharray="4 7"
+                  stroke-linecap="round"
+                />
+
+                <!-- Tapered Tail Tip -->
+                <path d="M 86 226 Q 74 242 64 246 Q 77 244 90 231 Z" fill="currentColor" />
+
+                <!-- Sculpted Editorial Serpent Head (Tracks Cursor Gently) -->
+                <g id="snakeHeadGroup" transform="translate(226, 168) rotate(155)">
+                  <!-- Head Silhouette -->
+                  <path d="M -4 -8 C 8 -10, 22 -5, 28 0 C 22 5, 8 10, -4 8 C -8 4, -8 -4, -4 -8 Z"
+                    class="fill-paper dark:fill-darkCard"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                  <!-- Crown Geometric Diamond Marking -->
+                  <path d="M 3 0 L 9 -3 L 15 0 L 9 3 Z" fill="#C86D51" />
+                  <!-- Expressive Slit Eyes -->
+                  <circle cx="15" cy="-4.2" r="1.3" fill="currentColor" />
+                  <circle cx="15" cy="4.2" r="1.3" fill="currentColor" />
+                  <!-- Delicate Forked Tongue -->
+                  <path id="snakeTongue" d="M 28 0 L 36 0 L 40 -2.5 M 36 0 L 40 2.5"
+                    fill="none"
+                    stroke="#C86D51"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                  />
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Minimalist Kinetic Discipline Ticker -->
+    <section class="py-4 border-b border-hairline dark:border-darkHairline overflow-hidden select-none">
+      <div class="animate-marquee flex items-center gap-8 font-mono text-xs text-muted dark:text-neutral-500">
+        <span>LOCAL AI ORCHESTRATION</span>
+        <span class="text-terracotta">✦</span>
+        <span>SYSTEMS PROGRAMMING</span>
+        <span class="text-sage">✦</span>
+        <span>SELF-HOSTED N8N PIPELINES</span>
+        <span class="text-terracotta">✦</span>
+        <span>WEB SECURITY &amp; HARDENING</span>
+        <span class="text-sage">✦</span>
+        <span>LINUX &amp; BASH AUTOMATION</span>
+        <span class="text-terracotta">✦</span>
+        <!-- Duplicate for seamless infinite loop -->
+        <span>LOCAL AI ORCHESTRATION</span>
+        <span class="text-terracotta">✦</span>
+        <span>SYSTEMS PROGRAMMING</span>
+        <span class="text-sage">✦</span>
+        <span>SELF-HOSTED N8N PIPELINES</span>
+        <span class="text-terracotta">✦</span>
+        <span>WEB SECURITY &amp; HARDENING</span>
+        <span class="text-sage">✦</span>
+        <span>LINUX &amp; BASH AUTOMATION</span>
+        <span class="text-terracotta">✦</span>
+      </div>
+    </section>
+
+    <!-- Selected Work Section (2-Column Editorial Bento Grid + Category Filter Pills) -->
+    <section id="work" class="py-16 sm:py-20 border-b border-hairline dark:border-darkHairline">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+        <div class="flex items-center gap-3">
+          <h2 class="font-display text-lg sm:text-xl font-semibold tracking-tight">Selected Work</h2>
+          <span id="projectCountBadge" class="px-2 py-0.5 rounded-full font-mono text-[10px] border border-hairline dark:border-darkHairline text-muted dark:text-neutral-400">04</span>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div id="categoryFilters" class="flex flex-wrap items-center gap-1.5 font-mono text-[11px]">
+          <button type="button" data-filter="All" class="filter-pill active px-3 py-1 rounded-full bg-ink text-paper dark:bg-white dark:text-ink transition-colors cursor-pointer">
+            All
+          </button>
+          <button type="button" data-filter="Automation" class="filter-pill px-3 py-1 rounded-full border border-hairline dark:border-darkHairline text-muted dark:text-neutral-400 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-pointer">
+            Automation
+          </button>
+          <button type="button" data-filter="Local AI" class="filter-pill px-3 py-1 rounded-full border border-hairline dark:border-darkHairline text-muted dark:text-neutral-400 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-pointer">
+            Local AI
+          </button>
+          <button type="button" data-filter="Security" class="filter-pill px-3 py-1 rounded-full border border-hairline dark:border-darkHairline text-muted dark:text-neutral-400 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-pointer">
+            Security
+          </button>
+        </div>
+      </div>
+
+      <!-- 2-Column Bento Cards Grid -->
+      <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </section>
+
+    <!-- Compact Capabilities / Stack Strip with Coiled Serpent Divider Emblem -->
+    <section id="stack" class="py-14 sm:py-16 border-b border-hairline dark:border-darkHairline">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div class="flex items-center gap-2.5">
+          <!-- Tiny Serpent Emblem SVG -->
+          <svg class="w-5 h-5 text-terracotta shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <path d="M5 17c0-4 14-2 14-7s-14-3-14-7" />
+            <circle cx="19" cy="10" r="1" fill="currentColor" />
+          </svg>
+          <h2 class="font-display text-xs font-semibold uppercase tracking-widest text-muted dark:text-neutral-400">
+            Core Stack
+          </h2>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <span class="px-3.5 py-1.5 rounded-full text-xs font-mono border border-hairline dark:border-darkHairline bg-white/80 dark:bg-darkCard/80 hover:border-terracotta/60 transition-colors">Python</span>
+          <span class="px-3.5 py-1.5 rounded-full text-xs font-mono border border-hairline dark:border-darkHairline bg-white/80 dark:bg-darkCard/80 hover:border-terracotta/60 transition-colors">C / C++</span>
+          <span class="px-3.5 py-1.5 rounded-full text-xs font-mono border border-hairline dark:border-darkHairline bg-white/80 dark:bg-darkCard/80 hover:border-terracotta/60 transition-colors">Linux &amp; Bash</span>
+          <span class="px-3.5 py-1.5 rounded-full text-xs font-mono border border-hairline dark:border-darkHairline bg-white/80 dark:bg-darkCard/80 hover:border-terracotta/60 transition-colors">Docker</span>
+          <span class="px-3.5 py-1.5 rounded-full text-xs font-mono border border-hairline dark:border-darkHairline bg-white/80 dark:bg-darkCard/80 hover:border-terracotta/60 transition-colors">n8n</span>
+          <span class="px-3.5 py-1.5 rounded-full text-xs font-mono border border-hairline dark:border-darkHairline bg-white/80 dark:bg-darkCard/80 hover:border-terracotta/60 transition-colors">Web Security</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Minimal Footer with Tiny Circular Portrait Icon (26px) -->
+    <footer id="contact" class="py-12 sm:py-14">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+          <div class="w-[26px] h-[26px] rounded-full overflow-hidden border border-neutral-300 dark:border-neutral-700 shrink-0">
+            <img 
+              src="Gemini_Generated_Image_1dzabj1dzabj1dza.png" 
+              alt="Ayushman Borgohain" 
+              class="user-avatar-img user-portrait-sync"
+              onerror="handleAvatarFallback(this)"
+            />
+          </div>
+          <span class="font-mono text-xs text-muted dark:text-neutral-400">
+            © 2026 Ayushman Borgohain
+          </span>
+        </div>
+
+        <div class="flex items-center gap-5 text-xs font-mono text-muted dark:text-neutral-400">
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="hover:text-ink dark:hover:text-white transition-colors inline-flex items-center gap-1">
+            <span>GitHub</span>
+            <span>↗</span>
+          </a>
+          <button id="copyEmailBtn" type="button" class="hover:text-ink dark:hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1">
+            <span>Email</span>
+            <span>⎘</span>
+          </button>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Slide-Over Detail Drawer (Keeps main page crisp & low-text) -->
+  <div id="projectDrawerBackdrop" class="fixed inset-0 z-50 hidden bg-black/35 backdrop-blur-xs transition-opacity">
+    <aside id="projectDrawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-paper dark:bg-darkCard border-l border-hairline dark:border-darkHairline p-7 sm:p-9 shadow-2xl flex flex-col justify-between transform translate-x-full transition-transform duration-300">
+      <div>
+        <div class="flex items-center justify-between pb-6 border-b border-hairline dark:border-darkHairline">
+          <span id="drawerIndex" class="font-mono text-xs text-terracotta">01 · AUTOMATION</span>
+          <button id="closeDrawerBtn" type="button" aria-label="Close drawer" class="w-8 h-8 rounded-full border border-hairline dark:border-darkHairline flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M18 6L6 18M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <h3 id="drawerTitle" class="font-display text-2xl font-semibold tracking-tight mt-6">Project Title</h3>
+        <p id="drawerSummary" class="mt-4 text-sm text-muted dark:text-neutral-400 leading-relaxed"></p>
+
+        <div class="mt-6">
+          <span class="font-mono text-[11px] uppercase tracking-wider text-neutral-400 block mb-2.5">Architecture &amp; Tools</span>
+          <div id="drawerTags" class="flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+
+      <div class="pt-6 border-t border-hairline dark:border-darkHairline flex items-center justify-between">
+        <a id="drawerLink" href="#" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 rounded-full bg-ink text-paper dark:bg-white dark:text-ink text-xs font-medium hover:opacity-85 transition-opacity inline-flex items-center gap-1.5">
+          <span>View Repository</span>
+          <span>↗</span>
+        </a>
+        <span class="font-mono text-[11px] text-neutral-400">ESC to close</span>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Minimal Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 px-4 py-2 rounded-full bg-ink text-paper dark:bg-white dark:text-ink text-xs font-mono shadow-lg opacity-0 pointer-events-none transition-opacity duration-300">
+    Email copied
+  </div>
+
+  <script>
+    // 0. Clean Portrait Fallback Helper (Tries relative path first, then clean monogram fallback)
+    function handleAvatarFallback(imgEl) {
+      if (!imgEl.dataset.retried) {
+        imgEl.dataset.retried = '1';
+        imgEl.src = './Gemini_Generated_Image_1dzabj1dzabj1dza.png';
+        return;
+      }
+      const svgMonogram = encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#1C1C1E"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#FAFAFA" font-family="sans-serif" font-weight="600" font-size="22">AB</text></svg>`
+      );
+      imgEl.src = `data:image/svg+xml;utf8,${svgMonogram}`;
+    }
+
+    // 1. Portfolio Data with Bespoke Mini-UI Previews (No Cloudflare Workers)
+    const projects = [
+      {
+        num: '01',
+        title: 'Local AI & n8n Pipelines',
+        subtitle: 'Containerized agent workflows & automated webhook orchestration.',
+        category: 'Automation',
+        summary: 'Self-hosted n8n automation pipelines paired with local Hermes Agent nodes and Dockerized microservices for zero-latency private task execution.',
+        tags: ['n8n', 'Docker', 'Hermes Agent', 'Python'],
+        url: 'https://github.com',
+        previewHtml: `
+          <div class="h-28 rounded-xl border border-hairline dark:border-darkHairline bg-paper/70 dark:bg-darkPaper/70 p-3.5 flex items-center justify-between font-mono text-[10px]">
+            <div class="px-2.5 py-1.5 rounded-lg border border-hairline dark:border-darkHairline bg-white dark:bg-darkCard flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-terracotta"></span>
+              <span>Webhook</span>
+            </div>
+            <div class="flex-1 border-t border-dashed border-neutral-300 dark:border-neutral-700 mx-2 relative">
+              <span class="w-1.5 h-1.5 rounded-full bg-sage absolute -top-[3.5px] left-1/2 animate-ping"></span>
+            </div>
+            <div class="px-2.5 py-1.5 rounded-lg border border-hairline dark:border-darkHairline bg-white dark:bg-darkCard">
+              n8n Node
+            </div>
+            <div class="flex-1 border-t border-dashed border-neutral-300 dark:border-neutral-700 mx-2"></div>
+            <div class="px-2.5 py-1.5 rounded-lg border border-sage/40 bg-sage/10 text-sage dark:text-emerald-400">
+              Agent OK
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '02',
+        title: 'Offline Edge & GGUF Inference',
+        subtitle: 'Quantized local LLM inference via llama.cpp & Linux runtimes.',
+        category: 'Local AI',
+        summary: 'Running quantized GGUF language models directly on resource-constrained Linux and mobile hardware using llama.cpp with custom system prompts.',
+        tags: ['llama.cpp', 'GGUF', 'C / C++', 'Linux & Bash'],
+        url: 'https://github.com',
+        previewHtml: `
+          <div class="h-28 rounded-xl border border-hairline dark:border-darkHairline bg-paper/70 dark:bg-darkPaper/70 p-3.5 flex flex-col justify-between font-mono text-[10px]">
+            <div class="flex items-center justify-between text-neutral-400">
+              <span>llama-cli -m model.gguf</span>
+              <span class="text-sage">42.8 t/s</span>
+            </div>
+            <div class="space-y-1.5">
+              <div class="h-1.5 w-4/5 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
+                <div class="h-full w-3/4 bg-terracotta rounded-full"></div>
+              </div>
+              <div class="flex justify-between text-[9px] text-neutral-400">
+                <span>CTX: 4096</span>
+                <span>VRAM: 0MB (CPU)</span>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '03',
+        title: 'Security Lab & Web Recon',
+        subtitle: 'Isolated vulnerability testing, traffic inspection & hardening.',
+        category: 'Security',
+        summary: 'Controlled Linux environment for analyzing OWASP Top 10 vectors, intercepting HTTP flows with Burp Suite, and auditing database schemas.',
+        tags: ['Web Security', 'Burp Suite', 'Python', 'Linux & Bash'],
+        url: 'https://github.com',
+        previewHtml: `
+          <div class="h-28 rounded-xl border border-hairline dark:border-darkHairline bg-paper/70 dark:bg-darkPaper/70 p-3.5 flex flex-col justify-between font-mono text-[10px]">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-neutral-300 dark:bg-neutral-700"></span>
+              <span class="w-2 h-2 rounded-full bg-neutral-300 dark:bg-neutral-700"></span>
+              <span class="text-neutral-400 ml-1">recon://audit</span>
+            </div>
+            <div class="text-neutral-500 dark:text-neutral-400 space-y-0.5">
+              <div>&gt; headers_check --strict</div>
+              <div class="text-sage">[PASS] CSP · HSTS · TLS 1.3</div>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '04',
+        title: 'Minimalist Web & Hardening',
+        subtitle: 'Zero-bloat interfaces built with strict security headers.',
+        category: 'Security',
+        summary: 'Ultra-fast static interfaces and hardened web endpoints engineered with semantic markup, clean typography, and strict Content-Security-Policy rules.',
+        tags: ['Web Security', 'CSP', 'Docker', 'Git'],
+        url: 'https://github.com',
+        previewHtml: `
+          <div class="h-28 rounded-xl border border-hairline dark:border-darkHairline bg-paper/70 dark:bg-darkPaper/70 p-3.5 flex items-center justify-between font-mono text-[10px]">
+            <div class="space-y-1">
+              <div class="text-ink dark:text-neutral-200 font-medium">WEB_HARDENING</div>
+              <div class="text-neutral-400">CSP · XSS · CSRF Guard</div>
+            </div>
+            <div class="px-2.5 py-1 rounded-full border border-hairline dark:border-darkHairline bg-white dark:bg-darkCard text-terracotta">
+              A+ Grade
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    // Render 2-Column Bento Cards with Category Filter Support
+    const grid = document.getElementById('projectsGrid');
+    const countBadge = document.getElementById('projectCountBadge');
+
+    function renderProjects(filterCategory = 'All') {
+      grid.innerHTML = '';
+      const filtered = filterCategory === 'All'
+        ? projects
+        : projects.filter(p => p.category === filterCategory);
+
+      countBadge.textContent = String(filtered.length).padStart(2, '0');
+
+      filtered.forEach((item) => {
+        const originalIndex = projects.indexOf(item);
+        const card = document.createElement('article');
+        card.className = 'group relative rounded-2xl border border-hairline dark:border-darkHairline bg-white/85 dark:bg-darkCard/85 p-5 sm:p-6 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all duration-300 cursor-pointer flex flex-col justify-between';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between text-[11px] font-mono text-muted dark:text-neutral-500 mb-4">
+              <span>${item.num} · ${item.category}</span>
+              <span class="w-6 h-6 rounded-full border border-hairline dark:border-darkHairline flex items-center justify-center group-hover:bg-ink group-hover:text-paper dark:group-hover:bg-white dark:group-hover:text-ink transition-colors">
+                ↗
+              </span>
+            </div>
+
+            ${item.previewHtml}
+
+            <h3 class="font-display text-base sm:text-lg font-semibold tracking-tight mt-5 group-hover:text-terracotta transition-colors">
+              ${item.title}
+            </h3>
+            <p class="mt-1.5 text-xs sm:text-sm text-muted dark:text-neutral-400 line-clamp-1">
+              ${item.subtitle}
+            </p>
+          </div>
+
+          <div class="mt-5 pt-3.5 border-t border-hairline/70 dark:border-darkHairline/70 flex flex-wrap gap-1.5">
+            ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-md font-mono text-[10px] bg-paper dark:bg-darkPaper border border-hairline dark:border-darkHairline text-muted dark:text-neutral-400">${t}</span>`).join('')}
+          </div>
+        `;
+        card.addEventListener('click', () => openDrawer(originalIndex));
+        grid.appendChild(card);
+      });
+    }
+
+    renderProjects('All');
+
+    // Category Filter Pill Click Handlers
+    document.querySelectorAll('.filter-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-pill').forEach(b => {
+          b.classList.remove('bg-ink', 'text-paper', 'dark:bg-white', 'dark:text-ink');
+          b.classList.add('border', 'border-hairline', 'dark:border-darkHairline', 'text-muted', 'dark:text-neutral-400');
+        });
+        btn.classList.remove('border', 'border-hairline', 'dark:border-darkHairline', 'text-muted', 'dark:text-neutral-400');
+        btn.classList.add('bg-ink', 'text-paper', 'dark:bg-white', 'dark:text-ink');
+        renderProjects(btn.dataset.filter);
+      });
+    });
+
+    // 2. Slide-Over Drawer Logic
+    const backdrop = document.getElementById('projectDrawerBackdrop');
+    const drawer = document.getElementById('projectDrawer');
+    const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+
+    function openDrawer(index) {
+      const p = projects[index];
+      document.getElementById('drawerIndex').textContent = `${p.num} · ${p.category.toUpperCase()}`;
+      document.getElementById('drawerTitle').textContent = p.title;
+      document.getElementById('drawerSummary').textContent = p.summary;
+      document.getElementById('drawerLink').href = p.url;
+      document.getElementById('drawerTags').innerHTML = p.tags
+        .map(tag => `<span class="px-3 py-1 rounded-full font-mono text-xs border border-hairline dark:border-darkHairline bg-white dark:bg-darkPaper">${tag}</span>`)
+        .join('');
+
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        drawer.classList.remove('translate-x-full');
+      });
+    }
+
+    function closeDrawer() {
+      drawer.classList.add('translate-x-full');
+      setTimeout(() => {
+        backdrop.classList.add('hidden');
+      }, 280);
+    }
+
+    closeDrawerBtn.addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) closeDrawer();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDrawer();
+    });
+
+    // 3. Editorial Art-Style Snake Animation & Cursor Head Tracking
+    const snakeWrapper = document.getElementById('artSerpentWrapper');
+    const snakeHead = document.getElementById('snakeHeadGroup');
+    const snakeBody = document.getElementById('snakeBodyGroup');
+    const snakeTongue = document.getElementById('snakeTongue');
+    const spotlight = document.getElementById('cursorSpotlight');
+
+    let targetAngle = 155;
+    let currentAngle = 155;
+    let targetOffsetX = 0;
+    let targetOffsetY = 0;
+    let currentOffsetX = 0;
+    let currentOffsetY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      // Subtle ambient cursor spotlight
+      if (spotlight) {
+        const isDark = document.documentElement.classList.contains('dark');
+        const glowColor = isDark ? 'rgba(200, 109, 81, 0.06)' : 'rgba(200, 109, 81, 0.05)';
+        spotlight.style.background = `radial-gradient(520px circle at ${e.clientX}px ${e.clientY}px, ${glowColor}, transparent 70%)`;
+      }
+
+      if (!snakeWrapper) return;
+      const rect = snakeWrapper.getBoundingClientRect();
+      const centerX = rect.left + rect.width * 0.7;
+      const centerY = rect.top + rect.height * 0.52;
+      const dx = e.clientX - centerX;
+      const dy = e.clientY - centerY;
+
+      const rawAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+      const clampedDelta = Math.max(-35, Math.min(35, Math.sin((rawAngle - 155) * Math.PI / 180) * 35));
+      targetAngle = 155 + clampedDelta;
+
+      targetOffsetX = Math.max(-6, Math.min(6, dx * 0.015));
+      targetOffsetY = Math.max(-6, Math.min(6, dy * 0.015));
+    });
+
+    function animateEditorialSnake(time) {
+      const t = time * 0.002;
+      const breatheY = Math.sin(t) * 2.5;
+      const tongueScale = 0.85 + Math.abs(Math.sin(t * 2.4)) * 0.35;
+
+      currentAngle += (targetAngle - currentAngle) * 0.08;
+      currentOffsetX += (targetOffsetX - currentOffsetX) * 0.08;
+      currentOffsetY += (targetOffsetY - currentOffsetY) * 0.08;
+
+      if (snakeBody) {
+        snakeBody.setAttribute('transform', `translate(${currentOffsetX.toFixed(2)}, ${(currentOffsetY + breatheY).toFixed(2)})`);
+      }
+      if (snakeHead) {
+        snakeHead.setAttribute('transform', `translate(226, 168) rotate(${currentAngle.toFixed(2)})`);
+      }
+      if (snakeTongue) {
+        snakeTongue.setAttribute('transform', `scale(${tongueScale.toFixed(2)}, 1)`);
+      }
+
+      requestAnimationFrame(animateEditorialSnake);
+    }
+    requestAnimationFrame(animateEditorialSnake);
+
+    // 4. Subtle Kinetic Ink-Line Serpent Cursor Trail on Canvas
+    const trailCanvas = document.getElementById('serpentTrailCanvas');
+    const ctx = trailCanvas.getContext('2d');
+    const trailPoints = [];
+    const maxPoints = 22;
+
+    function resizeCanvas() {
+      trailCanvas.width = window.innerWidth;
+      trailCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    window.addEventListener('mousemove', (e) => {
+      trailPoints.push({ x: e.clientX, y: e.clientY, life: 1 });
+      if (trailPoints.length > maxPoints) trailPoints.shift();
+    });
+
+    function renderTrail() {
+      ctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+
+      if (trailPoints.length > 2) {
+        for (let i = 1; i < trailPoints.length; i++) {
+          const p0 = trailPoints[i - 1];
+          const p1 = trailPoints[i];
+          p1.life -= 0.035;
+
+          if (p1.life > 0) {
+            ctx.beginPath();
+            ctx.moveTo(p0.x, p0.y);
+            ctx.lineTo(p1.x, p1.y);
+            ctx.strokeStyle = `rgba(200, 109, 81, ${p1.life * 0.26})`;
+            ctx.lineWidth = (i / trailPoints.length) * 2.5;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+          }
+        }
+        while (trailPoints.length && trailPoints[0].life <= 0) {
+          trailPoints.shift();
+        }
+      }
+      requestAnimationFrame(renderTrail);
+    }
+    requestAnimationFrame(renderTrail);
+
+    // 5. Live Portrait Upload Sync (Click header avatar to swap icon instantly)
+    const avatarInput = document.getElementById('avatarUploadInput');
+    avatarInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.querySelectorAll('.user-portrait-sync').forEach(img => {
+          img.src = ev.target.result;
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // 6. Dark / Light Theme Switcher
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlEl = document.documentElement;
+    if (localStorage.getItem('theme') === 'dark') {
+      htmlEl.classList.add('dark');
+    }
+    themeToggle.addEventListener('click', () => {
+      htmlEl.classList.toggle('dark');
+      localStorage.setItem('theme', htmlEl.classList.contains('dark') ? 'dark' : 'light');
+    });
+
+    // 7. Live IST Clock
+    function updateISTClock() {
+      const clockEl = document.getElementById('istClock');
+      if (!clockEl) return;
+      try {
+        const now = new Date().toLocaleTimeString('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        });
+        clockEl.textContent = `${now} IST`;
+      } catch (e) {
+        clockEl.textContent = 'IST';
+      }
+    }
+    updateISTClock();
+    setInterval(updateISTClock, 15000);
+
+    // 8. Copy Email Helper
+    const copyEmailBtn = document.getElementById('copyEmailBtn');
+    const toast = document.getElementById('toast');
+    copyEmailBtn.addEventListener('click', () => {
+      const tempInput = document.createElement('input');
+      tempInput.value = 'ayushman.borgohain@proton.me';
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      try {
+        document.execCommand('copy');
+        toast.classList.remove('opacity-0');
+        setTimeout(() => toast.classList.add('opacity-0'), 2000);
+      } catch (e) {}
+      document.body.removeChild(tempInput);
+    });
+  </script>
+</body>
+</html>
